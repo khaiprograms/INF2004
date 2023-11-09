@@ -12,12 +12,6 @@ set(PICO_BOARD pico_w)
 # Initialize the SDK
 pico_sdk_init()
 
-message("Running makefsdata python script")
-execute_process(COMMAND
-    py makefsdata.py
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-)
-
 add_executable(webserver
 main.c
 webserver.c)
