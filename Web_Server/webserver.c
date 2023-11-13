@@ -3,6 +3,7 @@
 #include "lwip/tcp.h"
 #include "lwip/apps/fs.h"
 #include "lwip/pbuf.h"
+#include "sd.h"
 
 #define BUF_SIZE 1024
 #define PORT 80
@@ -15,6 +16,30 @@ typedef struct HTTP_SERVER_T
     char recv_path[BUF_SIZE];
     char send_data[BUF_SIZE];
 } HTTP_SERVER_T;
+
+char *get_data_sd()
+{
+    char *protocol = "icmp";
+    char *src_addr = "192.168.1.6";
+    char *dst_addr = "192.168.1.2";
+    char *html_string = read_sd_card("packet.html");
+    //char *html_string = "<!DOCTYPE html><html><head><title>Network Info</title></head><body><h1>Network Information</h1><p>protocol: %s, src: %s, dst: %s</p></body></html>";
+
+    // Determine the required buffer size
+    int size = snprintf(NULL, 0, html_string, protocol, src_addr, dst_addr);
+
+    // Allocate memory for the HTML content
+    char *html = (char*)malloc(size + 1);
+
+    if (html == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL;
+    }
+
+    // Generate the HTML content
+    snprintf(html, size + 1, html_string, protocol, src_addr, dst_addr);
+    return html;
+}
 
 char *get_default_data()
 {
@@ -56,7 +81,8 @@ err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
 {
     HTTP_SERVER_T *state = (HTTP_SERVER_T *)arg;
 
-    char *response_data = get_default_data();
+    //char *response_data = get_default_data();
+    char *response_data = get_data_sd();
     char *content_type = get_content_type(state->recv_path);
 
     printf("data:%s\n",response_data);

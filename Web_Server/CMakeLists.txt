@@ -14,18 +14,24 @@ pico_sdk_init()
 
 add_executable(webserver
 main.c
-webserver.c)
+sd.c
+webserver.c
+        )
 
 target_include_directories(webserver PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
     )
+
+# Tell CMake where to find other source code
+add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico-master/FatFs_SPI build)
 
 # pull in common dependencies
 target_link_libraries(webserver 
         pico_cyw43_arch_lwip_threadsafe_background
         pico_lwip_http
         pico_stdlib
-        hardware_adc)
+        hardware_adc
+        FatFs_SPI)
 
  # enable usb output, disable uart output
  pico_enable_stdio_usb(webserver 1)
