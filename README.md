@@ -53,7 +53,7 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 - Consider mechanisms for sending results to external devices (e.g., a computer via USB) or storing them on the SD card for later retrieval.
 
 
-Assignment of Project Components:
+## Assignment of Project Components:
 | Team Member | Component |
 |----------|----------|
 | Malcolm | SD Card Capabilities |
