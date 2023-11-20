@@ -9,6 +9,7 @@
 #define PORT 80
 #define MAX_PATH_LENGTH 15
 
+// Structure to hold server and client state
 typedef struct HTTP_SERVER_T
 {
     struct tcp_pcb *server_pcb;
@@ -41,6 +42,7 @@ char *get_data_sd()
     return html;
 }
 
+// Function to determine the content type based on file extension or path
 char *get_default_data()
 {
     return "<!DOCTYPE html><html><head><title>Default HTML Page </title></head><body><h1>Default HTML Page</h1></body></html>";
@@ -77,6 +79,7 @@ char *get_content_type(char *file_path) {
     return "application/octet-stream";
 }
 
+// Callback function to send HTTP response data
 err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
 {
     HTTP_SERVER_T *state = (HTTP_SERVER_T *)arg;
@@ -103,6 +106,7 @@ err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
     return ERR_OK;
 }
 
+// Callback function for receiving HTTP requests
 err_t http_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 {
     HTTP_SERVER_T *state = (HTTP_SERVER_T *)arg;
@@ -116,7 +120,6 @@ err_t http_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t er
         // retrieve http request from buffer
         char *data = (char *)p->payload;
         int data_len = p->tot_len;
-        // printf(data);
         // Check if the received data contains an HTTP GET request
         if (data_len >= 3 && strncmp(data, "GET", 3) == 0)
         {
@@ -143,6 +146,7 @@ err_t http_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t er
     return http_server_send_data(arg, state->client_pcb);
 }
 
+// Callback function for handling accepted connections
 static err_t http_server_accept(void *arg, struct tcp_pcb *client_pcb, err_t err)
 {
     HTTP_SERVER_T *state = (HTTP_SERVER_T *)arg;
@@ -160,6 +164,7 @@ static err_t http_server_accept(void *arg, struct tcp_pcb *client_pcb, err_t err
     return ERR_OK;
 }
 
+// Initialize the HTTP server
 void http_server_init()
 {
     HTTP_SERVER_T *state = calloc(1, sizeof(HTTP_SERVER_T));
@@ -183,6 +188,7 @@ void http_server_init()
     printf("listening...\n");
 }
 
+// Initialize Wi-Fi connection
 void initWifi(const char *ssid, const char *password)
 {
     cyw43_arch_init();
