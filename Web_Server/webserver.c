@@ -5,7 +5,7 @@
 #include "lwip/pbuf.h"
 #include "sd.h"
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 4096
 #define PORT 80
 #define MAX_PATH_LENGTH 15
 
@@ -18,34 +18,146 @@ typedef struct HTTP_SERVER_T
     char send_data[BUF_SIZE];
 } HTTP_SERVER_T;
 
-char *get_data_sd()
-{
-    char *protocol = "icmp";
-    char *src_addr = "192.168.1.6";
-    char *dst_addr = "192.168.1.2";
-    char *html_string = read_sd_card("packet.html");
-    //char *html_string = "<!DOCTYPE html><html><head><title>Network Info</title></head><body><h1>Network Information</h1><p>protocol: %s, src: %s, dst: %s</p></body></html>";
-
-    // Determine the required buffer size
-    int size = snprintf(NULL, 0, html_string, protocol, src_addr, dst_addr);
-
-    // Allocate memory for the HTML content
-    char *html = (char*)malloc(size + 1);
-
-    if (html == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        return NULL;
-    }
-
-    // Generate the HTML content
-    snprintf(html, size + 1, html_string, protocol, src_addr, dst_addr);
-    return html;
-}
-
 // Function to determine the content type based on file extension or path
 char *get_default_data()
 {
     return "<!DOCTYPE html><html><head><title>Default HTML Page </title></head><body><h1>Default HTML Page</h1></body></html>";
+}
+
+char *get_alert_data_sd() {
+    char *alert_output = read_sd_card("alert.txt");
+
+    if (alert_output == NULL) {
+        fprintf(stderr, "Error reading alert file.\n");
+        return NULL;
+    }
+    
+    char *html_string = read_sd_card("webpage2.html");
+    if (html_string == NULL){
+        return get_default_data();
+    }
+
+    char *row_html_string = "<tr><td>%d</td><td>%s</td></tr>";
+    char *remaining_html_string = "</tbody></table></div></div></div></body></html>";
+
+    int count = 0;
+    size_t total_length = 0;
+    size_t buffer_size = 4096; // Initial buffer size
+    char *concatenated_html = (char *)malloc(buffer_size * sizeof(char));
+
+    if (concatenated_html == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL;
+    }
+
+    char *line = strtok(alert_output, "\n"); // Get the first line
+
+    while (line != NULL) {
+        count++;
+
+        // Format each row
+        int row_length = snprintf(concatenated_html + total_length, buffer_size - total_length, row_html_string, count, line);
+
+        if (row_length < 0 || (size_t)row_length >= buffer_size - total_length) {
+            fprintf(stderr, "Row length error or insufficient buffer size.\n");
+            free(concatenated_html);
+            return NULL;
+        }
+
+        total_length += row_length;
+
+        line = strtok(NULL, "\n"); // Move to the next line
+    }
+
+
+    // Allocate memory for the final HTML
+    size_t final_length = total_length + strlen(html_string) + strlen(remaining_html_string) + 1;
+    char *html = (char *)malloc(final_length * sizeof(char));
+    if (html == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        free(concatenated_html);
+        return NULL;
+    }
+
+    // Construct the final HTML by combining html_string, concatenated_html, and remaining_html_string
+    snprintf(html, final_length, "%s%s%s", html_string, concatenated_html, remaining_html_string);
+
+    // Free memory allocated for concatenated_html
+    free(concatenated_html);
+
+    return html;
+}
+
+char *get_data_sd() {
+    char *log_output = read_sd_card("log_output.txt");
+    // char *alert_output = read_sd_card("alert.txt");
+
+    if (log_output == NULL) {
+        fprintf(stderr, "Error reading output file.\n");
+        return NULL;
+    }
+
+    char src_addr[20]; // Assuming IP addresses can be up to 20 characters
+    char dst_addr[20];
+    char flag[10]; // Assuming packet type can be up to 10 characters
+    char timestamp[20];
+    int src_port, dst_port;
+
+    char *html_string = read_sd_card("webpage.html");
+    if (html_string == NULL){
+        return get_default_data();
+    }
+
+    char *row_html_string = "<tr><td>%d</td><td>%s</td><td>%s</td><td>%d</td><td>%s</td><td>%d</td><td>%s</td></tr>";
+    char *remaining_html_string = "</tbody></table></div></div></div></body></html>";
+
+    int count = 0;
+    size_t total_length = 0;
+    size_t buffer_size = 4096; // Initial buffer size
+    char *concatenated_html = (char *)malloc(buffer_size * sizeof(char));
+
+    if (concatenated_html == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL;
+    }
+
+    char *line = strtok(log_output, "\n"); // Get the first line
+
+    while (line != NULL) {
+        count++;
+        sscanf(line, "%19[^,], %19[^,], %d, %19[^,], %d, %9s", timestamp, src_addr, &src_port, dst_addr, &dst_port, flag);
+
+        // Format each row
+        int row_length = snprintf(concatenated_html + total_length, buffer_size - total_length, row_html_string, count, timestamp, src_addr, src_port, dst_addr, dst_port, flag);
+        printf("TIMESTAMP: %s\n", timestamp);
+        if (row_length < 0 || (size_t)row_length >= buffer_size - total_length) {
+            fprintf(stderr, "Row length error or insufficient buffer size.\n");
+            free(concatenated_html);
+            return NULL;
+        }
+
+        total_length += row_length;
+
+        line = strtok(NULL, "\n"); // Move to the next line
+    }
+
+
+    // Allocate memory for the final HTML
+    size_t final_length = total_length + strlen(html_string) + strlen(remaining_html_string) + 1;
+    char *html = (char *)malloc(final_length * sizeof(char));
+    if (html == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        free(concatenated_html);
+        return NULL;
+    }
+
+    // Construct the final HTML by combining html_string, concatenated_html, and remaining_html_string
+    snprintf(html, final_length, "%s%s%s", html_string, concatenated_html, remaining_html_string);
+
+    // Free memory allocated for concatenated_html
+    free(concatenated_html);
+
+    return html;
 }
 
 // Function to determine the content type based on file extension or path
@@ -83,14 +195,22 @@ char *get_content_type(char *file_path) {
 err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
 {
     HTTP_SERVER_T *state = (HTTP_SERVER_T *)arg;
+    char *response_data;
+    // char *response_data = get_default_data();
+    printf("RECV PATH %s\n", state->recv_path);
 
-    //char *response_data = get_default_data();
-    char *response_data = get_data_sd();
+    if (strcmp(state->recv_path, "/") == 0){
+        response_data = get_data_sd();
+    }else if (strcmp(state->recv_path, "/alert_page.html") == 0){
+        response_data = get_alert_data_sd();
+    }
+
     char *content_type = get_content_type(state->recv_path);
 
     printf("data:%s\n",response_data);
     printf("content-type:%s\n",content_type);
-    
+    printf("strlen:%d", strlen(response_data));
+
     // Create the HTTP response message
     snprintf(state->send_data, BUF_SIZE,
              "HTTP/1.1 %s\r\n"
@@ -128,7 +248,7 @@ err_t http_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t er
             // Find the end of the path (usually ends with HTTP/1.x)
             char *path_start = data + 4; // Skip "GET "
             char *path_end = strstr(path_start, " HTTP/1.");
-            char path[MAX_PATH_LENGTH];
+            //char path[MAX_PATH_LENGTH];
             if (path_end == NULL)
             {
                 printf("Invalid HTTP request format\n");
