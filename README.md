@@ -62,5 +62,12 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 | Kenneth | Web Server, WiFi |
 | Khairul | Network Interface Capabilities |
 
+## Block Diagram
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/9a7769f8-6030-4618-b7e9-d1241c7a192d)
+
+## Flow Chart
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/9d681c65-2904-4ec1-850d-8f7cc5915133)
+
+
 
 
