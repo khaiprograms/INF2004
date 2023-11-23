@@ -63,7 +63,7 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 | Khairul | Network Interface Capabilities |
 
 ## Block Diagram
-![image](https://github.com/khaiprograms/INF2004/assets/54208644/9a7769f8-6030-4618-b7e9-d1241c7a192d)
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/4e566747-6530-425f-ab0e-88b06c548410)
 
 ## Flow Chart
 ![image](https://github.com/khaiprograms/INF2004/assets/54208644/9d681c65-2904-4ec1-850d-8f7cc5915133)
