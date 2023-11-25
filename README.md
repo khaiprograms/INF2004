@@ -64,7 +64,8 @@ For the flow of our program, it begins with the initialization of 3 components, 
 
 After the initialization, in the main loop, the Pico W will be reading network data from the ethernet device, parsing the data into a format that <elaborate>, using the parsed data to detect TCP SYN flood, and writing the parsed data into the log file stored on the SD card. If a TCP SYN flood is detected, an alert will be written into an alert text file on the SD card. While the main loop is running, the Pico W will be listening on port 80 for incoming HTTP connection in the background. Once a client connects to the web server, the main loop will be interrupted and the Pico W will then read the HTML file, log file and alert file from the SD card to incorporate the data from the log and alert file into the HTML webpage and serve this webpage to the client. After serving the webpage, the Pico W then resumes the main loop.
 
-![image](UpdatedFlowchart.png)
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/67925ad3-8b2d-4036-8e68-58ad0ef55e3c)
+
 
 
 
