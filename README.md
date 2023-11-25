@@ -66,7 +66,7 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 ![image](https://github.com/khaiprograms/INF2004/assets/54208644/4e566747-6530-425f-ab0e-88b06c548410)
 
 ## Flow Chart
-![image](https://github.com/khaiprograms/INF2004/assets/54208644/9d681c65-2904-4ec1-850d-8f7cc5915133)
+![image](UpdatedFlowchart.png)
 
 
 
