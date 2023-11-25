@@ -57,7 +57,7 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 | Khairul | Network Interface Capabilities |
 
 ## Block Diagram
-![image](https://github.com/khaiprograms/INF2004/assets/54208644/4e566747-6530-425f-ab0e-88b06c548410)
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/ef51f5c6-b119-443d-a225-ccfc2d69b36f)
 
 ## Flow Chart
 For the flow of our program, it begins with the initialization of 3 components, the SD card reader, the Ethernet driver, and the Web Server. The initialization of the SD card reader includes ____idk___. The initialization of the Ethernet driver includes ensuring that an Ethernet cable is connected and enabling monitoring mode. The initialization of the Web Server includes connecting to either a Wi-Fi or Hotspot and starting a listener on port 80 for incoming HTTP connection. 
