@@ -66,6 +66,23 @@ After the initialization, in the main loop, the Pico W will be reading network d
 
 ![image](https://github.com/khaiprograms/INF2004/assets/54208644/67925ad3-8b2d-4036-8e68-58ad0ef55e3c)
 
+## Requirements
+- Cmake Version 3.12
+- pico_sdk_import.cmake
+- pcio_extras_import_optional.cmake
+- pico_cyw43_arch_lwip_threadsafe_background
+- pico_lwip_http
+- pico_stdlib
+- FatFs_SPI
+
+## How to run
+Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. 
+
+## References
+- Pico Example's TCP Server
+- Pico Example's NTP Client
+
+
 
 
 
