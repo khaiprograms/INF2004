@@ -1,10 +1,4 @@
 # INF2004
-
-Code for the assignment
-1. Ethernet Drivers
-2. SD Card Drivers
-3. Web Server
-
 ## Project Title: Raspberry Pi Pico Network Analyzer
 
 ## Project Overview:
@@ -63,10 +57,33 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 | Khairul | Network Interface Capabilities |
 
 ## Block Diagram
-![image](https://github.com/khaiprograms/INF2004/assets/54208644/9a7769f8-6030-4618-b7e9-d1241c7a192d)
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/6190d2e6-eb5f-4c7d-9c1f-de5501e2c173)
 
 ## Flow Chart
-![image](https://github.com/khaiprograms/INF2004/assets/54208644/9d681c65-2904-4ec1-850d-8f7cc5915133)
+For the flow of our program, it begins with the initialization of 3 components, the SD card reader, the Ethernet driver, and the Web Server. The SD card initialization process configures the GPIOs for the card detect and chip select signals, initializes the SPI interface, and sets a flag indicating that the driver has been initialized. The initialization of the Ethernet driver includes ensuring that an Ethernet cable is connected and enabling monitoring mode. The initialization of the Web Server includes connecting to either a Wi-Fi or Hotspot and starting a listener on port 80 for incoming HTTP connection. 
+
+After the initialization, in the main loop, the Pico W will be reading network data from the Ethernet device, parsing the data, which involves converting hexadecimal bytes to their respective ASCII representations. The parsing process specifically identifies IPv4, TCP identifiers and extracts IP addresses, port numbers, and TCP flags embedded within the incoming TCP packets. By analyzing the hexadecimal bytes and their arrangements, the Pico W extracts essential information such as IP addresses, ports, and TCP flags encoded in ASCII. This parsed data is stored into an log file on SD card. If a TCP SYN flood is detected, an alert will be written into an alert text file on the SD card. While the main loop is running, the Pico W will be listening on port 80 for incoming HTTP connection in the background. Once a client connects to the web server, the main loop will be interrupted and the Pico W will then read the HTML file, log file and alert file from the SD card to incorporate the data from the log and alert file into the HTML webpage and serve this webpage to the client. After serving the webpage, the Pico W then resumes the main loop
+
+![image](https://github.com/khaiprograms/INF2004/assets/54208644/67925ad3-8b2d-4036-8e68-58ad0ef55e3c)
+
+## Requirements
+- Cmake Version 3.12
+- pico_sdk_import.cmake
+- pcio_extras_import_optional.cmake
+- pico_cyw43_arch_lwip_threadsafe_background
+- pico_lwip_http
+- pico_stdlib
+- FatFs_SPI
+
+## How to run
+Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. 
+
+## References
+- Pico Example's TCP Server
+- Pico Example's NTP Client
+
+
+
 
 
 
