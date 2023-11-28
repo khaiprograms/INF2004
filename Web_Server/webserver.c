@@ -8,6 +8,20 @@
 #define BUF_SIZE 4096
 #define PORT 80
 #define MAX_PATH_LENGTH 15
+#define MAX_SETS 10         // Maximum number of sets
+#define LINES_PER_SET 10    // Number of lines per set
+// Max length for the resulting string containing the HTML content
+#define MAX_HTML_STRING_LENGTH 300
+
+typedef struct {
+    char timestamp[20];
+    char src_addr[20];
+    int src_port;
+    char dst_addr[20];
+    int dst_port;
+    char flag[10];
+} ParsedData;
+
 
 // Structure to hold server and client state
 typedef struct HTTP_SERVER_T
@@ -42,7 +56,7 @@ char *get_alert_data_sd() {
 
     int count = 0;
     size_t total_length = 0;
-    size_t buffer_size = 4096; // Initial buffer size
+    size_t buffer_size = BUF_SIZE; // Initial buffer size
     char *concatenated_html = (char *)malloc(buffer_size * sizeof(char));
 
     if (concatenated_html == NULL) {
@@ -88,10 +102,8 @@ char *get_alert_data_sd() {
     return html;
 }
 
-char *get_data_sd() {
+char **get_data_sd() {
     char *log_output = read_sd_card("log_output.txt");
-    // char *alert_output = read_sd_card("alert.txt");
-
     if (log_output == NULL) {
         fprintf(stderr, "Error reading output file.\n");
         return NULL;
@@ -103,33 +115,29 @@ char *get_data_sd() {
     char timestamp[20];
     int src_port, dst_port;
 
-    char *html_string = read_sd_card("webpage.html");
-    if (html_string == NULL){
-        return get_default_data();
-    }
+    char** sets_array = malloc(MAX_SETS * sizeof(char*)); // Allocate memory for MAX_SETS pointers to strings
+    int set_count = 0;
 
     char *row_html_string = "<tr><td>%d</td><td>%s</td><td>%s</td><td>%d</td><td>%s</td><td>%d</td><td>%s</td></tr>";
-    char *remaining_html_string = "</tbody></table></div></div></div></body></html>";
 
     int count = 0;
     size_t total_length = 0;
-    size_t buffer_size = 4096; // Initial buffer size
+    size_t buffer_size = BUF_SIZE; // Initial buffer size
     char *concatenated_html = (char *)malloc(buffer_size * sizeof(char));
-
     if (concatenated_html == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
         return NULL;
     }
 
     char *line = strtok(log_output, "\n"); // Get the first line
-
+    
     while (line != NULL) {
         count++;
         sscanf(line, "%19[^,], %19[^,], %d, %19[^,], %d, %9s", timestamp, src_addr, &src_port, dst_addr, &dst_port, flag);
 
         // Format each row
         int row_length = snprintf(concatenated_html + total_length, buffer_size - total_length, row_html_string, count, timestamp, src_addr, src_port, dst_addr, dst_port, flag);
-        printf("TIMESTAMP: %s\n", timestamp);
+
         if (row_length < 0 || (size_t)row_length >= buffer_size - total_length) {
             fprintf(stderr, "Row length error or insufficient buffer size.\n");
             free(concatenated_html);
@@ -138,24 +146,88 @@ char *get_data_sd() {
 
         total_length += row_length;
 
+        // Check if 10 lines have been processed or if it's the last iteration
+        if (count % LINES_PER_SET == 0 || line == NULL) {
+            // Allocate memory for the concatenated_html string for this set
+            sets_array[set_count] = (char *)malloc((total_length + 1) * sizeof(char));
+            if (sets_array[set_count] == NULL) {
+                fprintf(stderr, "Memory allocation failed.\n");
+                free(concatenated_html);
+                // free(html_string);
+                return NULL;
+            }
+
+            // Copy concatenated_html to the sets_array
+            strncpy(sets_array[set_count], concatenated_html, total_length);
+            sets_array[set_count][total_length] = '\0';  // Null-terminate the string
+
+            // Reset total_length for the next set
+            total_length = 0;
+
+            set_count++;  // Increment set count
+
+            if (set_count >= MAX_SETS) {
+                fprintf(stderr, "Maximum number of sets reached.\n");
+                break;  // Break the loop if the maximum number of sets is reached
+            }
+        }
+        
         line = strtok(NULL, "\n"); // Move to the next line
     }
 
+        // Check if we've processed all lines and it's not a complete set
+    if (line == NULL && count % LINES_PER_SET != 0) {
+        // Allocate memory for the partial set
+        sets_array[set_count] = (char *)malloc((total_length + 1) * sizeof(char));
+        if (sets_array[set_count] == NULL) {
+            fprintf(stderr, "Memory allocation failed.\n");
+            free(concatenated_html);
+            // free(html_string);
+            return NULL;
+        }
+
+        // Copy concatenated_html to the sets_array for the partial set
+        strncpy(sets_array[set_count], concatenated_html, total_length);
+        sets_array[set_count][total_length] = '\0';  // Null-terminate the string
+
+        set_count++;  // Increment set count
+    }
+    return sets_array;
+}
+
+char *access_page(int current_page){
+    char *html_string = read_sd_card("webpage.html");
+    if (html_string == NULL) {
+        return get_default_data();
+    }
+
+    printf("INSIDE CURRENT_PAGE %d\n\n", current_page);
+
+    char **sets_array = get_data_sd();
+    int max_page = sizeof(sets_array)-1;
+    char *lines_of_logs = sets_array[current_page-1];
+    char *html_table_tags = "</tbody></table>";
+
+    // Create a string to hold the HTML content
+    char html_page_btn[MAX_HTML_STRING_LENGTH];
+    // Format the HTML string with the page number
+    snprintf(html_page_btn, MAX_HTML_STRING_LENGTH, "<div class='d-flex justify-content-center mt-3'><a href='page_%d.html' class='btn btn-primary ml-2'>Previous</a><div class='align-self-center'> %d/%d </div><a href='page_%d.html' class='btn btn-primary ml-2'>Next</a></div>", current_page-1, current_page, max_page, current_page+1);
+    char *remaining_html_string = "</div></div></div></body></html>";
 
     // Allocate memory for the final HTML
-    size_t final_length = total_length + strlen(html_string) + strlen(remaining_html_string) + 1;
-    char *html = (char *)malloc(final_length * sizeof(char));
+    size_t final_length = strlen(lines_of_logs) + strlen(html_string) + strlen(html_table_tags) + strlen(html_page_btn) + strlen(remaining_html_string) + 1;
+    char *html = (char *)malloc(final_length);
     if (html == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
-        free(concatenated_html);
+        free(lines_of_logs);
         return NULL;
     }
 
-    // Construct the final HTML by combining html_string, concatenated_html, and remaining_html_string
-    snprintf(html, final_length, "%s%s%s", html_string, concatenated_html, remaining_html_string);
+    snprintf(html, final_length, "%s%s%s%s%s", html_string, lines_of_logs, html_table_tags, html_page_btn, remaining_html_string);
 
-    // Free memory allocated for concatenated_html
-    free(concatenated_html);
+    // Free memory allocated for lines_of_logs
+    free(html_string);
+    free(lines_of_logs);
 
     return html;
 }
@@ -167,7 +239,7 @@ char *get_content_type(char *file_path) {
     }
 
     const char *extension = strrchr(file_path, '.'); // Find the last dot in the file path
-
+    printf("This is extension %s\n", extension);
     if (extension) {
         extension++; // Move past the dot
         if (strcmp(extension, "html") == 0) {
@@ -197,15 +269,25 @@ err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
     HTTP_SERVER_T *state = (HTTP_SERVER_T *)arg;
     char *response_data;
     // char *response_data = get_default_data();
-    printf("RECV PATH %s\n", state->recv_path);
 
-    if (strcmp(state->recv_path, "/") == 0){
-        response_data = get_data_sd();
-    }else if (strcmp(state->recv_path, "/alert_page.html") == 0){
+    char *path = state->recv_path;
+    printf("RECV PATH %s\n", path);
+    char *search_page = "/page_";
+
+    if (strcmp(path, "/") == 0) {
+        // response_data = get_data_sd();
+        response_data = access_page(1);
+    } else if (strncmp(path, search_page, strlen(search_page)) == 0 && strstr(path, ".html") != NULL) {
+        char *value_str = path + strlen(search_page); // Get the substring after "/page_"
+        int page_number = atoi(value_str); // Convert the substring to an integer
+        printf("The page number is: %d\n", page_number);
+        response_data = access_page(page_number);
+    } else if (strcmp(path, "/alert_page.html") == 0) {
         response_data = get_alert_data_sd();
     }
 
-    char *content_type = get_content_type(state->recv_path);
+
+    char *content_type = get_content_type(path);
 
     printf("data:%s\n",response_data);
     printf("content-type:%s\n",content_type);
@@ -223,6 +305,7 @@ err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
     // Send the response over the TCP connection
     tcp_write(tpcb, state->send_data, strlen(state->send_data), 0);
     tcp_output(tpcb);
+    tpcb = NULL;
     return ERR_OK;
 }
 
