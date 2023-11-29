@@ -100,7 +100,8 @@ SD Card
 ## Demo Video
 https://www.youtube.com/watch?v=D8-eHZfuuZE
 
-
+## Presentation Slides
+https://docs.google.com/presentation/d/1mcliT8C7pXkJlNqrVkO3rmbuOkau8ODv168sI8c7X3Q/edit?usp=sharing
 
 
 
