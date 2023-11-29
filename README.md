@@ -82,6 +82,15 @@ Change the credentials for the WiFi/Hotspot inside of main.c and use the provide
 - Pico Example's TCP Server
 - Pico Example's NTP Client
 
+Packet Parsing
+- Hex bytes to ASCII
+https://stackoverflow.com/questions/9227246/hex-to-ascii-in-c
+http://www.ocfreaks.com/tutorial-embedded-programming-basics-in-c-bitwise-operations/
+
+- Packet parsing in C / Packet structure
+https://www.reddit.com/r/networking/comments/1i398r/how_can_i_extract_plain_text_from_a_packets_hex/
+https://linkedin.com/pulse/decode-network-packet-hex-dump-chance-johnson
+
 
 
 
