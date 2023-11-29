@@ -79,8 +79,11 @@ After the initialization, in the main loop, the Pico W will be reading network d
 Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. 
 
 ## References
-- Pico Example's TCP Server
-- Pico Example's NTP Client
+Web Server
+- Pico Example's TCP Server https://github.com/raspberrypi/pico-examples/blob/master/pico_w/wifi/tcp_server/picow_tcp_server.c
+
+NTP Client
+- Pico Example's NTP Client https://github.com/raspberrypi/pico-examples/blob/master/pico_w/wifi/ntp_client/picow_ntp_client.c
 
 Packet Parsing
 - Hex bytes to ASCII
