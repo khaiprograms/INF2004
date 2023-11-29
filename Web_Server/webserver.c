@@ -13,16 +13,6 @@
 // Max length for the resulting string containing the HTML content
 #define MAX_HTML_STRING_LENGTH 300
 
-typedef struct {
-    char timestamp[20];
-    char src_addr[20];
-    int src_port;
-    char dst_addr[20];
-    int dst_port;
-    char flag[10];
-} ParsedData;
-
-
 // Structure to hold server and client state
 typedef struct HTTP_SERVER_T
 {
@@ -33,56 +23,49 @@ typedef struct HTTP_SERVER_T
 } HTTP_SERVER_T;
 
 // Function to determine the content type based on file extension or path
-char *get_default_data()
-{
+char *get_default_data() {
     return "<!DOCTYPE html><html><head><title>Default HTML Page </title></head><body><h1>Default HTML Page</h1></body></html>";
 }
 
 char *get_alert_data_sd() {
     char *alert_output = read_sd_card("alert.txt");
-
     if (alert_output == NULL) {
         fprintf(stderr, "Error reading alert file.\n");
-        return NULL;
-    }
-    
-    char *html_string = read_sd_card("webpage2.html");
-    if (html_string == NULL){
         return get_default_data();
     }
 
+    char *html_string = read_sd_card("webpage2.html");
+    if (html_string == NULL) {
+        return get_default_data();
+    }
+
+    // HTML templates
     char *row_html_string = "<tr><td>%d</td><td>%s</td></tr>";
     char *remaining_html_string = "</tbody></table></div></div></div></body></html>";
 
+    // Processing alert data to construct HTML rows
     int count = 0;
     size_t total_length = 0;
-    size_t buffer_size = BUF_SIZE; // Initial buffer size
-    char *concatenated_html = (char *)malloc(buffer_size * sizeof(char));
-
+    char *concatenated_html = (char *)malloc(BUF_SIZE * sizeof(char));
     if (concatenated_html == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
         return NULL;
     }
 
-    char *line = strtok(alert_output, "\n"); // Get the first line
-
+    char *line = strtok(alert_output, "\n");
     while (line != NULL) {
         count++;
 
-        // Format each row
-        int row_length = snprintf(concatenated_html + total_length, buffer_size - total_length, row_html_string, count, line);
-
-        if (row_length < 0 || (size_t)row_length >= buffer_size - total_length) {
+        int row_length = snprintf(concatenated_html + total_length, BUF_SIZE - total_length, row_html_string, count, line);
+        if (row_length < 0 || (size_t)row_length >= BUF_SIZE - total_length) {
             fprintf(stderr, "Row length error or insufficient buffer size.\n");
             free(concatenated_html);
             return NULL;
         }
 
         total_length += row_length;
-
-        line = strtok(NULL, "\n"); // Move to the next line
+        line = strtok(NULL, "\n");
     }
-
 
     // Allocate memory for the final HTML
     size_t final_length = total_length + strlen(html_string) + strlen(remaining_html_string) + 1;
@@ -93,12 +76,11 @@ char *get_alert_data_sd() {
         return NULL;
     }
 
-    // Construct the final HTML by combining html_string, concatenated_html, and remaining_html_string
+    // Construct the final HTML
     snprintf(html, final_length, "%s%s%s", html_string, concatenated_html, remaining_html_string);
 
-    // Free memory allocated for concatenated_html
+    // Clean up and return the HTML string
     free(concatenated_html);
-
     return html;
 }
 
@@ -201,11 +183,10 @@ char *access_page(int current_page){
         return get_default_data();
     }
 
-    printf("INSIDE CURRENT_PAGE %d\n\n", current_page);
-
     char **sets_array = get_data_sd();
     int max_page = sizeof(sets_array)-1;
     char *lines_of_logs = sets_array[current_page-1];
+    free(sets_array);
     char *html_table_tags = "</tbody></table>";
 
     // Create a string to hold the HTML content
@@ -239,7 +220,7 @@ char *get_content_type(char *file_path) {
     }
 
     const char *extension = strrchr(file_path, '.'); // Find the last dot in the file path
-    printf("This is extension %s\n", extension);
+
     if (extension) {
         extension++; // Move past the dot
         if (strcmp(extension, "html") == 0) {
@@ -301,11 +282,10 @@ err_t http_server_send_data(void *arg, struct tcp_pcb *tpcb)
              "\r\n"
              "%s",
              "200 OK", content_type, strlen(response_data), response_data);
-
     // Send the response over the TCP connection
     tcp_write(tpcb, state->send_data, strlen(state->send_data), 0);
     tcp_output(tpcb);
-    tpcb = NULL;
+    response_data = NULL;
     return ERR_OK;
 }
 
