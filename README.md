@@ -103,6 +103,9 @@ https://linkedin.com/pulse/decode-network-packet-hex-dump-chance-johnson
 SD Card
 - no-OS-FatFS-SD-SPI-RPi-Pico https://gitee.com/aiminick/no-OS-FatFS-SD-SPI-RPi-Pico
 
+Ethernet to Pico
+- https://www.raspberrypi.com/news/how-to-add-ethernet-to-raspberry-pi-pico/
+
 ## Demo Video
 https://www.youtube.com/watch?v=D8-eHZfuuZE
 
