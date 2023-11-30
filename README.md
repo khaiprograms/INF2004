@@ -111,6 +111,10 @@ Ethernet to Pico
 ## Demo Video
 https://www.youtube.com/watch?v=D8-eHZfuuZE
 
+## Future Works
+- Detect other types of attacks (Eg. ICMP Flood, DHCP Starvation, etc)
+- Drop packets from malicious source ip
+
 
 
 
