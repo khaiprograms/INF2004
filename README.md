@@ -84,6 +84,8 @@ After the initialization, in the main loop, the Pico W will be reading network d
 ## How to run
 Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. 
 
+For web pages files to be served on the web server, copy the webpage.html and webpage2.html from Files directory into SD card manually.
+
 ## References
 Web Server
 - Pico Example's TCP Server https://github.com/raspberrypi/pico-examples/blob/master/pico_w/wifi/tcp_server/picow_tcp_server.c
@@ -108,6 +110,10 @@ Ethernet to Pico
 
 ## Demo Video
 https://www.youtube.com/watch?v=D8-eHZfuuZE
+
+## Future Works
+- Detect other types of attacks (Eg. ICMP Flood, DHCP Starvation, etc)
+- Drop packets from malicious source ip
 
 
 
