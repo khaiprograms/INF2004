@@ -115,8 +115,8 @@ https://www.youtube.com/watch?v=D8-eHZfuuZE
 
 ## Future Works
 - Detect other types of attacks (Eg. ICMP Flood, DHCP Starvation, etc)
-- Drop packets from malicious source ip
+- Drop packets from malicious source IP
 
-
+Note: Attempted_Final_Integration was our attempt at fully integrating, however, there were issues on the wifi that we were not able to fix due to time constraint.
 
 
