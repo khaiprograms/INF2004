@@ -59,6 +59,9 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 ## Mapping between the Pins 
 The following table shows the mapping between the pins on the RMII-based LAN8720 breakout board and the Pico.
 
+![image](https://github.com/khaiprograms/INF2004/assets/36407407/f8f6b7ae-36c2-498e-bcc8-09e767f39328)
+
+
 ## Block Diagram
 ![image](https://github.com/khaiprograms/INF2004/assets/54208644/6190d2e6-eb5f-4c7d-9c1f-de5501e2c173)
 
