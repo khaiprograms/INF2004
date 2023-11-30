@@ -82,9 +82,11 @@ After the initialization, in the main loop, the Pico W will be reading network d
 - FatFs_SPI
 
 ## How to run
-Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. 
+The Working_Partial_Integration is split into 2 parts:
+- WebServer & SD Card integration
+- Ethernet and Parsed Data integration
 
-For web pages files to be served on the web server, copy the webpage.html and webpage2.html from "SD Card Contents" directory into SD card manually.
+To run the partial integration, change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. For the web pages files to be served on the web server, copy both webpage.html and webpage2.html from SD Card Contents folder into SD card manually.
 
 ## References
 Web Server
