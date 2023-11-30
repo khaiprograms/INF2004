@@ -82,7 +82,9 @@ After the initialization, in the main loop, the Pico W will be reading network d
 - FatFs_SPI
 
 ## How to run
-Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. For web pages files to be served on the web server, copy the webpage.html and webpage2.html from Files directory into SD card.
+Change the credentials for the WiFi/Hotspot inside of main.c and use the provided CMakeList.txt to build the project. Copy the uf2 file created into the pico. 
+
+For web pages files to be served on the web server, copy the webpage.html and webpage2.html from Files directory into SD card manually.
 
 ## References
 Web Server
