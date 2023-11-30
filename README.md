@@ -56,6 +56,9 @@ _ Implement alerting mechanisms to notify users or administrators of network eve
 | Kenneth | Web Server, WiFi |
 | Khairul | Network Interface Capabilities |
 
+## Mapping between the Pins 
+The following table shows the mapping between the pins on the RMII-based LAN8720 breakout board and the Pico.
+
 ## Block Diagram
 ![image](https://github.com/khaiprograms/INF2004/assets/54208644/6190d2e6-eb5f-4c7d-9c1f-de5501e2c173)
 
