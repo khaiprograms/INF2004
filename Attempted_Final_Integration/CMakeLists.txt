@@ -17,7 +17,7 @@ add_executable(complete_project
 main.c
 sd.c
 webserver.c
-#${CMAKE_CURRENT_LIST_DIR}/src/packet_handler.c
+${CMAKE_CURRENT_LIST_DIR}/src/packet_handler.c
 )
 
 add_library(pico_lwip_complete INTERFACE)
@@ -27,7 +27,7 @@ target_include_directories(pico_lwip_complete INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/src/lwip
 )
 
-target_include_directories(complete_project PRIVATE
+target_include_directories(complete_project INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/src/include
     )
